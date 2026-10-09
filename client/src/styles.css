@@ -1,0 +1,131 @@
+@import "./theme.css";
+
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; padding: 0; height: 100%; }
+body {
+  background: #0c0e11;
+  color: var(--ink);
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+
+/* The display is a fixed 16:9 stage, letterboxed into whatever window it is
+   given. Every card is built for that one shape, which is what lets a card
+   size its type in container units and be right everywhere. */
+.stage {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.frame {
+  container-type: size;
+  aspect-ratio: 16 / 9;
+  width: min(100vw, calc(100vh * 16 / 9));
+  height: min(100vh, calc(100vw * 9 / 16));
+  background: var(--ground);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.cardarea { flex: 1 1 auto; min-height: 0; position: relative; }
+.card-frame { width: 100%; height: 100%; border: 0; display: block; }
+.card-empty {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-faint);
+  font-size: var(--t-caption);
+  padding: 0 8%;
+  text-align: center;
+}
+
+.captionbar {
+  flex: 0 0 auto;
+  border-top: 1px solid var(--rule);
+  background: var(--ground-soft);
+  padding: clamp(8px, 1.6cqh, 26px) clamp(12px, 3cqw, 56px);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(6px, 1.2cqw, 22px) clamp(10px, 2cqw, 36px);
+  align-items: baseline;
+}
+.speaker {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.said { font-size: var(--t-caption); min-width: 0; }
+.said.heard { color: var(--ink-muted); }
+
+.controls {
+  flex: 0 0 auto;
+  display: flex;
+  gap: clamp(6px, 1.2cqw, 20px);
+  padding: 0 clamp(12px, 3cqw, 56px) clamp(10px, 2cqh, 30px);
+  background: var(--ground-soft);
+}
+.controls input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--t-caption);
+  padding: clamp(6px, 1cqh, 16px) clamp(10px, 1.5cqw, 22px);
+  border-radius: var(--radius);
+}
+.controls button {
+  font-family: var(--font-mono);
+  font-size: var(--t-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--rule);
+  padding: 0 clamp(12px, 2cqw, 30px);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.controls button[disabled] { opacity: 0.45; cursor: default; }
+.controls button.listening { border-color: var(--accent); color: var(--accent); }
+
+/* A phone in portrait gets the same display, scaled, and a line saying why
+   — rather than a reflowed layout that a smart display does not have. */
+.narrow-notice {
+  position: absolute;
+  inset: auto 0 100% 0;
+  padding: 16px;
+  text-align: center;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.debug {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: rgba(0, 0, 0, 0.72);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: clamp(9px, 0.9cqw, 18px);
+  padding: 10px 14px;
+  max-width: 44%;
+  white-space: pre-wrap;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}

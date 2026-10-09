@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Today</title>
+<style>
+  /* A card is one self-contained document. It can link no stylesheet and
+     no script at runtime, so everything it needs is in here. Colours come
+     from tokens so the whole look can be changed in one block. */
+  :root {
+    --ground: #15181d;
+    --ink: #f2f0ec;
+    --ink-muted: rgba(242, 240, 236, 0.62);
+    --accent: #4f9d8c;
+    --rule: rgba(242, 240, 236, 0.14);
+    --pad: clamp(16px, 4cqw, 72px);
+    --t-label: clamp(10px, 1.2cqw, 24px);
+    --t-figure: clamp(32px, 9cqw, 180px);
+    --t-headline: clamp(20px, 4.4cqw, 92px);
+    --t-body: clamp(12px, 1.6cqw, 32px);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    overflow: hidden;
+  }
+  .shell { container-type: size; height: 100%; padding: var(--pad); }
+  .fit {
+    display: flex; flex-direction: column; gap: clamp(8px, 1.5cqh, 28px);
+    transform-origin: top left; transform: scale(var(--fit, 1));
+    width: calc(100% / var(--fit, 1)); height: calc(100% / var(--fit, 1));
+  }
+  .label {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: var(--t-label); letter-spacing: 0.08em;
+    color: var(--ink-muted); text-transform: uppercase;
+  }
+  h1 { font-size: var(--t-headline); font-weight: 650; margin: 0; line-height: 1.02; }
+  .figure { font-size: var(--t-figure); font-weight: 700; line-height: 0.9; color: var(--accent); }
+  .bar { height: clamp(8px, 1.6cqh, 26px); background: var(--rule); width: 100%; }
+  .bar > span { display: block; height: 100%; background: var(--accent); }
+  .note { font-size: var(--t-body); color: var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="shell">
+ <div class="fit" id="fit">
+  <div class="label" id="label">Today</div>
+  <h1 id="headline">—</h1>
+  <div class="figure" id="figure"></div>
+  <div class="bar"><span id="progress" style="width:0%"></span></div>
+  <div class="note" id="note"></div>
+ </div>
+</div>
+<script>
+(function () {
+  "use strict";
+  function render(data) {
+    document.getElementById("label").textContent =
+      "[Today · " + (data.iso || "") + "]";
+    document.getElementById("headline").textContent = data.weekday || "Today";
+    document.getElementById("figure").textContent = data.date_text || "";
+    var pct = Number(data.percent_through) || 0;
+    document.getElementById("progress").style.width = pct + "%";
+    document.getElementById("note").textContent =
+      "Day " + (data.day_of_year || 0) + " of " + (data.days_in_year || 0) +
+      " · " + pct + "% through the year";
+    fitToBand();
+  }
+  window.CARD_APP_NAME = "example-today-card";
+  window.CARD_RENDER = function (structured) {
+    if (structured && (structured.iso || structured.weekday)) render(structured);
+  };
+  window.CARD_TEARDOWN = function () {
+    document.getElementById("figure").textContent = "";
+  };
+})();
+/* FIT */
+/* BRIDGE */
+</script>
+</body>
+</html>

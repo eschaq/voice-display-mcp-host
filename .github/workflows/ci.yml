@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e "host[dev]" mcp uvicorn
+
+      - name: Install client deps
+        run: cd client && npm ci
+
+      - name: Lint
+        run: |
+          ruff check host example-server
+          ruff format --check host example-server
+
+      - name: Python tests
+        run: pytest host/tests example-server/tests -q
+
+      - name: TypeScript strict build
+        run: cd client && npm run build
+
+      - name: End to end (headless Chromium)
+        run: |
+          npx --yes puppeteer browsers install chrome
+          python scripts/e2e/run_e2e.py
+        env:
+          CI: "true"
+
+  licenses:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check dependency licences
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e host pip-licenses
+          python scripts/check_licenses.py

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Timer</title>
+<style>
+  /* A card is one self-contained document. It can link no stylesheet and
+     no script at runtime, so everything it needs is in here. Colours come
+     from tokens so the whole look can be changed in one block. */
+  :root {
+    --ground: #15181d;
+    --ink: #f2f0ec;
+    --ink-muted: rgba(242, 240, 236, 0.62);
+    --accent: #4f9d8c;
+    --rule: rgba(242, 240, 236, 0.14);
+    --pad: clamp(16px, 4cqw, 72px);
+    --t-label: clamp(10px, 1.2cqw, 24px);
+    --t-figure: clamp(32px, 9cqw, 180px);
+    --t-headline: clamp(20px, 4.4cqw, 92px);
+    --t-body: clamp(12px, 1.6cqw, 32px);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    overflow: hidden;
+  }
+  .shell { container-type: size; height: 100%; padding: var(--pad); }
+  .fit {
+    display: flex; flex-direction: column; gap: clamp(8px, 1.5cqh, 28px);
+    transform-origin: top left; transform: scale(var(--fit, 1));
+    width: calc(100% / var(--fit, 1)); height: calc(100% / var(--fit, 1));
+  }
+  .label {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: var(--t-label); letter-spacing: 0.08em;
+    color: var(--ink-muted); text-transform: uppercase;
+  }
+  h1 { font-size: var(--t-headline); font-weight: 650; margin: 0; line-height: 1.02; }
+  .figure { font-size: var(--t-figure); font-weight: 700; line-height: 0.9; color: var(--accent); }
+  .bar { height: clamp(8px, 1.6cqh, 26px); background: var(--rule); width: 100%; }
+  .bar > span { display: block; height: 100%; background: var(--accent); }
+  .note { font-size: var(--t-body); color: var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="shell">
+ <div class="fit" id="fit">
+  <div class="label" id="label">Timer</div>
+  <h1 id="headline">—</h1>
+  <div class="figure" id="remaining">--:--</div>
+  <div class="bar"><span id="progress" style="width:100%"></span></div>
+  <div class="note" id="note"></div>
+ </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var total = 0;
+  var endsAt = 0;
+  var ticker = null;
+
+  function two(n) { return (n < 10 ? "0" : "") + n; }
+
+  function paint() {
+    var left = Math.max(0, Math.round((endsAt - Date.now()) / 1000));
+    var mins = Math.floor(left / 60);
+    document.getElementById("remaining").textContent = mins + ":" + two(left % 60);
+    var share = total > 0 ? Math.max(0, Math.min(100, (100 * left) / total)) : 0;
+    document.getElementById("progress").style.width = share + "%";
+    if (left <= 0 && ticker) {
+      clearInterval(ticker);
+      ticker = null;
+      document.getElementById("note").textContent = "Time's up.";
+    }
+  }
+
+  function render(data) {
+    document.getElementById("label").textContent = "[Timer · ends " + (data.ends_text || "") + "]";
+    document.getElementById("headline").textContent = data.label || "Timer";
+    total = (Number(data.minutes) || 0) * 60;
+    // The card counts down from the moment it is handed the data. The
+    // server sends an end time rather than a duration so a reload lands
+    // in the right place instead of starting over.
+    var parsed = Date.parse(data.ends_at || "");
+    endsAt = isNaN(parsed) ? Date.now() + total * 1000 : parsed;
+    document.getElementById("note").textContent =
+      (data.minutes || 0) + (Number(data.minutes) === 1 ? " minute" : " minutes") + " from now";
+    if (ticker) clearInterval(ticker);
+    ticker = setInterval(paint, 1000);
+    paint();
+    fitToBand();
+  }
+
+  window.CARD_APP_NAME = "example-timer-card";
+  window.CARD_RENDER = function (structured) {
+    if (structured && structured.ends_at) render(structured);
+  };
+  window.CARD_TEARDOWN = function () {
+    if (ticker) clearInterval(ticker);
+    ticker = null;
+  };
+})();
+/* FIT */
+/* BRIDGE */
+</script>
+</body>
+</html>

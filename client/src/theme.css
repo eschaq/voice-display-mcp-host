@@ -1,0 +1,26 @@
+/*
+ * Every colour and size the display uses, in one block.
+ *
+ * This is the file to change to make it yours. Nothing else declares a
+ * colour: the shell reads these tokens, and a card inlines its own copy
+ * (see example-server/cards). The default is deliberately neutral — a dark
+ * slate with one accent — rather than anybody's brand.
+ */
+:root {
+  --ground: #15181d;
+  --ground-soft: #1b1f26;
+  --ink: #f2f0ec;
+  --ink-muted: rgba(242, 240, 236, 0.62);
+  --ink-faint: rgba(242, 240, 236, 0.4);
+  --accent: #4f9d8c;
+  --rule: rgba(242, 240, 236, 0.14);
+
+  --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* A display is read from across a room, so everything is larger than a
+     page would be, and sized against the frame rather than the window. */
+  --t-caption: clamp(13px, 1.5cqw, 34px);
+  --t-label: clamp(10px, 1.05cqw, 24px);
+  --radius: 0;
+}

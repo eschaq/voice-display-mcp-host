@@ -1,0 +1,9 @@
+{
+  "name": "voice-display-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Drives the built client in headless Chromium against the example server.",
+  "dependencies": {
+    "puppeteer-core": "^23.0.0"
+  }
+}
