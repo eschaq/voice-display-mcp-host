@@ -29,6 +29,9 @@ jobs:
       - name: Install client deps
         run: cd client && npm ci
 
+      - name: Install e2e deps
+        run: cd scripts/e2e && npm ci
+
       - name: Lint
         run: |
           ruff check host example-server

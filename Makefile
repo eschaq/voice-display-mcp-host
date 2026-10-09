@@ -46,8 +46,11 @@ build: client/node_modules
 
 # Drives the real thing in headless Chromium: example server, host, client,
 # one spoken turn, and the card's handshake completing.
-e2e: install build
+e2e: install build scripts/e2e/node_modules
 	$(PY) scripts/e2e/run_e2e.py
+
+scripts/e2e/node_modules: scripts/e2e/package.json
+	cd scripts/e2e && npm install --silent
 
 clean:
 	rm -rf $(VENV) client/node_modules client/dist
