@@ -4,6 +4,6 @@
   "type": "module",
   "description": "Drives the built client in headless Chromium against the example server.",
   "dependencies": {
-    "puppeteer-core": "^23.0.0"
+    "puppeteer-core": "25.13.0"
   }
 }
